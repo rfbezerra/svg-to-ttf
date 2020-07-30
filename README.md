@@ -9,36 +9,42 @@ This image includes:
 
 ## Volumes
 This image defines 2 volumes:
-* /fonts/input - Input directory with svg glyphs
-* /fonts/build - Output directory containing generated files
-
-## Environment Variables
-These variables are exposed to use:
-* SKIP_STROKE_TO_PATH - Will not convert svg from stroke to path (default 0)
-* FONT_NAME - Name of the generated font (default to Unnamed)
-* UID - UserId used for generation (default 0 (root))
-* GID - GroupId used for generation (default 0 (root))
+* /fonts - Base directory where all works run
 
 ## Process
-This image will copy all svg glyphs from /fonts/input to a temporary directory.
+This image will copy all svg glyphs from /fonts/INPUT_FOLDER to a temporary directory.
 
 After that, if choose, all glyphs will be converted from stroke to path. Some fonts need this step, like [Feather](https://github.com/feathericons/feather).
 
 Finally, [Fontcustom](https://github.com/FontCustom/fontcustom) is used to generate desired TTF font.
 
 ## Use
-Simple use can be:
-`docker run --rm -v MY_INPUT_DIR:/fonts/input -v MY_OUTPUT_DIR:/fonts/build rfbezerra/svg-to-ttf`
+Help message :
+```shell
+docker run --rm -v WORK_DIRECTORY:/fonts rfbezerra/svg-to-ttf -h
+```
 
-If you want to define font name:
-`docker run --rm -v MY_INPUT_DIR:/fonts/input -v MY_OUTPUT_DIR:/fonts/build -e FONT_NAME=MY_FONT_NAME rfbezerra/svg-to-ttf`
+Simple font generation:
+```shell
+docker run --rm -v WORK_DIRECTORY:/fonts rfbezerra/svg-to-ttf -n FONT_NAME
+```
+This command will read all svg glyphs from WORK_DIRECTORY/input and create a folder named FONT_NAME with generated TTF font into.
+
+If you want to define another output folder:
+```shell
+docker run --rm -v WORK_DIRECTORY:/fonts rfbezerra/svg-to-ttf -n FONT_NAME -o OUTPUT_FOLDER
+```
 
 If you want that the result of build respect your user:
-`docker run --rm -v MY_INPUT_DIR:/fonts/input -v MY_OUTPUT_DIR:/fonts/build -e FONT_NAME=MY_FONT_NAME -e UID=$(id -u) -e GID=$(id -g) rfbezerra/svg-to-ttf`
+```shell
+docker run --rm -v WORK_DIRECTORY:/fonts rfbezerra/svg-to-ttf -n FONT_NAME -u $(id -u)
+```
 (GID is optional)
 
 If you dont need to convert stroke to path:
-`docker run --rm -v MY_INPUT_DIR:/fonts/input -v MY_OUTPUT_DIR:/fonts/build -e FONT_NAME=MY_FONT_NAME -e UID=$(id -u) -e SKIP_STROKE_TO_PATH=1 rfbezerra/svg-to-ttf`
+```shell
+docker run --rm -v WORK_DIRECTORY:/fonts rfbezerra/svg-to-ttf -n FONT_NAME -s
+```
 
 
 ## Contributing

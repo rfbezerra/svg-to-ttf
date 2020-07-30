@@ -5,14 +5,14 @@ CMD_LINE="docker run --rm -v "\""\${PWD}"\"":/fonts rfbezerra/svg-to-ttf"
 helpFunction()
 {
    echo ""
-   echo "Usage: ${CMD_LINE} -i INPUT_FOLDER -o OUTPUT_FOLDER -n FONT_NAME -u USER"
-   echo -e "\t-g, --gid [GID]               GroupId owner of the destination folder; default is equal to uid"
-   echo -e "\t-i, --input [FOLDER]          Folder where svg glyphs lives; default is ./input"
-   echo -e "\t-n, --name FONT_NAME          Name of the generated font"
-   echo -e "\t-o, --output [FOLDER]         Destination folder for generated fonts; default is ./FONT_NAME"
-   echo -e "\t-s, --skip_conversion         Skip the conversion from stroke to path"
-   echo -e "\t-u, --uid [UID]               UserId owner of the destination folder; default is 0 (root)"
-   echo -e "\t-h, --help                    Show this help message"
+   echo "Usage: ${CMD_LINE} [OPTIONS]"
+   echo -e "\t-g, --gid [GID]              GroupId owner of the destination folder; default is equal to uid"
+   echo -e "\t-i, --input [FOLDER]         Folder where svg glyphs lives; default is ./input"
+   echo -e "\t-n, --name FONT_NAME         Name of the generated font"
+   echo -e "\t-o, --output [FOLDER]        Destination folder for generated fonts; default is ./FONT_NAME"
+   echo -e "\t-s, --skip_conversion        Skip the conversion from stroke to path"
+   echo -e "\t-u, --uid [UID]              UserId owner of the destination folder; default is 0 (root)"
+   echo -e "\t-h, --help                   Show this help message"
    exit 1 # Exit script after printing help
 }
 

@@ -8,7 +8,7 @@ This image includes:
 * [Fontcustom](https://github.com/FontCustom/fontcustom)
 
 ## Volumes
-This image defines 2 volumes:
+This image defines a single volume:
 * /fonts - Base directory where all works run
 
 ## Process

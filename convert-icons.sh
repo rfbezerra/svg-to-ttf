@@ -9,6 +9,7 @@ helpFunction()
    echo -e "\t-g, --gid [GID]              GroupId owner of the destination folder; default is equal to uid"
    echo -e "\t-i, --input [FOLDER]         Folder where svg glyphs lives; default is ./input"
    echo -e "\t-n, --name FONT_NAME         Name of the generated font"
+   echo -e "\t-c, --codepoint [CODEPOINT]  Starting point for the character map, hexadecimal."
    echo -e "\t-o, --output [FOLDER]        Destination folder for generated fonts; default is ./FONT_NAME"
    echo -e "\t-s, --skip_conversion        Skip the conversion from stroke to path"
    echo -e "\t-u, --uid [UID]              UserId owner of the destination folder; default is 0 (root)"
@@ -33,15 +34,40 @@ convertFunction()
   XVFBPID=$! && DISPLAY=:2020 ${CMD} && kill ${XVFBPID}
 }
 
-buildFunction()
-{
-  echo "Generating font"
-  /usr/bin/fontcustom compile "${TEMP_FOLDER}" \
+_convert_hex_to_dec() {
+    printf "%d\n" "0x${1}"
+}
+
+_compileFont() {
+   /usr/bin/fontcustom compile "${TEMP_FOLDER}" \
     --font-name="${FONT_NAME}" \
     --output="${OUTPUT_FOLDER}" \
     --quiet \
     --force \
     --no-hash 2> /dev/null
+}
+
+defineCharacterMapFunction()
+{
+   _compileFont
+   echo "Overriding manifesto with custom codepoints"
+   target_manifest=".fontcustom-manifest.json"
+   temp_manifest="/tmp/manifest.json"
+   export DECIMAL_CODEPOINT=$(_convert_hex_to_dec "${CODEPOINT}")
+   awk '{
+     for(line=1; line<=NF; line++) {
+       if ($line~/\"codepoint":/) {
+         sub(/[0-9]+/,ENVIRON["DECIMAL_CODEPOINT"]+i++)
+       }
+     }
+   }1' "${target_manifest}" > "${temp_manifest}" && \
+   mv "${temp_manifest}" "${target_manifest}"
+}
+
+buildFunction()
+{
+  echo "Generating font"
+  _compileFont
 }
 
 cleanUpFunction()
@@ -64,6 +90,10 @@ while [ $# -gt 0 ]; do
     --name*|-n*)
       if [[ "$1" != *=* ]]; then shift; fi
       FONT_NAME="${1#*=}"
+      ;;
+    --codepoint*|-c)
+      if [[ "$1" != *=* ]]; then shift; fi
+      CODEPOINT="${1#*=}"
       ;;
     --uid*|-u*)
       if [[ "$1" != *=* ]]; then shift; fi
@@ -98,9 +128,11 @@ INPUT_FOLDER="${INPUT_FOLDER:-./input}"
 OUTPUT_FOLDER="${OUTPUT_FOLDER:-${FONT_NAME}}"
 UID="${UID:-0}"
 GID="${GID:-${UID}}"
+CODEPOINT="${CODEPOINT:-}"
 SKIP_CONVERSION="${SKIP_CONVERSION:-0}"
 
 prepareFunction
-if [ "${SKIP_CONVERSION}" != "1" ]; then convertFunction; fi
+[ "${SKIP_CONVERSION}" != "1" ] && convertFunction
+[ "${CODEPOINT}" ] && defineCharacterMapFunction
 buildFunction
 cleanUpFunction

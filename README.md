@@ -28,6 +28,7 @@ Usage: docker run --rm -v "${PWD}":/fonts rfbezerra/svg-to-ttf [OPTIONS]
   -g, --gid [GID]               GroupId owner of the destination folder; default is equal to uid
   -i, --input [FOLDER]          Folder where svg glyphs lives; default is ./input
   -n, --name FONT_NAME          Name of the generated font
+  -c, --codepoint [CODEPOINT]   Starting point for the character map, hexadecimal."
   -o, --output [FOLDER]         Destination folder for generated fonts; default is ./FONT_NAME
   -s, --skip_conversion         Skip the conversion from stroke to path
   -u, --uid [UID]               UserId owner of the destination folder; default is 0 (root)
